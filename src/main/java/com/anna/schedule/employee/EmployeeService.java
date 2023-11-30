@@ -1,8 +1,11 @@
 package com.anna.schedule.employee;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import com.anna.schedule.order.Order;
+import com.anna.schedule.util.DataResponse;
+import com.anna.schedule.util.ResponseMessage;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class EmployeeService {
@@ -13,23 +16,27 @@ public class EmployeeService {
         this.employeeRepository = employeeRepository;
     }
 
-    public ResponseEntity<Employee> add(Employee employee) {
-        try {
-            employee = employeeRepository.save(employee);
-
-            return new ResponseEntity<>(employee, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(employee, HttpStatus.BAD_REQUEST);
+    public DataResponse<Employee> add(Employee employee) {
+        if (employeeRepository.findById(employee.getId()).isPresent()) {
+            return new DataResponse<>(employee, ResponseMessage.EMPLOYEE_ALREADY_EXITS);
         }
+
+        return new DataResponse<>(employeeRepository.save(employee), null);
     }
 
-    public ResponseEntity<Employee> get(String phoneNumber) {
-        Employee employee = employeeRepository.getByPhoneNumber(phoneNumber);
+    public DataResponse<Employee> get(String id) {
+        Employee employee = employeeRepository.getByPhoneNumber(id);
 
-        if (employee == null) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        }
+        return employee == null
+                ? new DataResponse<>(null, ResponseMessage.EMPLOYEE_IS_NOT_FOUND)
+                : new DataResponse<>(employee, null);
+    }
 
-        return new ResponseEntity<>(employee, HttpStatus.OK);
+    public DataResponse<List<Order>> getAllOrders(String id) {
+        Employee employee = employeeRepository.getByPhoneNumber(id);
+
+        return employee == null
+                ? new DataResponse<>(null, ResponseMessage.EMPLOYEE_IS_NOT_FOUND)
+                : new DataResponse<>(employee.getOrderList(), null);
     }
 }
