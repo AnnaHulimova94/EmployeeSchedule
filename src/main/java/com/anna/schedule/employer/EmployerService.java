@@ -3,9 +3,15 @@ package com.anna.schedule.employer;
 import com.anna.schedule.order.Order;
 import com.anna.schedule.util.DataResponse;
 import com.anna.schedule.util.ResponseMessage;
+import com.anna.schedule.util.OrderFileWriter;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.aspectj.weaver.ast.Or;
 import org.springframework.stereotype.Repository;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Repository
 public class EmployerService {
@@ -24,19 +30,37 @@ public class EmployerService {
         return new DataResponse<>(employerRepository.save(employer), null);
     }
 
-    public DataResponse<Employer> get(String id) {
-        Employer employer = employerRepository.getByPhoneNumber(id);
+    public DataResponse<Employer> getByPhoneNumber(String phoneNumber) {
+        Employer employer = employerRepository.getByPhoneNumber(phoneNumber);
 
         return employer == null
                 ? new DataResponse<>(null, ResponseMessage.EMPLOYER_IS_NOT_FOUND)
                 : new DataResponse<>(employer, null);
     }
 
-    public DataResponse<List<Order>> getAllOrders(String id) {
-        Employer employer = employerRepository.getByPhoneNumber(id);
+    public DataResponse<Employer> get(long id) {
+        Employer employer = employerRepository.findById(id).orElse(null);
+
+        return employer == null
+                ? new DataResponse<>(null, ResponseMessage.EMPLOYER_IS_NOT_FOUND)
+                : new DataResponse<>(employer, null);
+    }
+
+    public DataResponse<List<Order>> getAllOrders(long id) {
+        Employer employer = employerRepository.findById(id).orElse(null);
 
         return employer == null
                 ? new DataResponse<>(null, ResponseMessage.EMPLOYER_IS_NOT_FOUND)
                 : new DataResponse<>(employer.getOrderList(), null);
+    }
+
+    public Workbook getScheduleFile(long id) {
+        Employer employer = employerRepository.findById(id).orElse(null);
+
+        if (employer == null) {
+            return null;
+        }
+
+        return new OrderFileWriter().generate(employer.getOrderList(), employer);
     }
 }

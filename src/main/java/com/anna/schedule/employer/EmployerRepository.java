@@ -6,8 +6,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface EmployerRepository extends JpaRepository<Employer, String> {
+public interface EmployerRepository extends JpaRepository<Employer, Long> {
 
-    @Query(value = "select * from Employer where employer_id = ?1", nativeQuery = true)
-    Employer getByPhoneNumber(String employerId);
+    @Query(value = "select * from Employer where employer_phone_number = ?1", nativeQuery = true)
+    Employer getByPhoneNumber(String phoneNumber);
 }
