@@ -25,29 +25,29 @@ public class EmployeeController {
         this.employeeService = employeeService;
     }
 
-    @PostMapping("/add")
+    @PostMapping
     public ResponseEntity<DataResponse<Employee>> add(@RequestBody Employee employee) {
         return new ResponseEntity<>(employeeService.add(employee), HttpStatus.OK);
     }
 
-    @GetMapping("/get-by-phone-number/{phoneNumber}")
-    public ResponseEntity<DataResponse<Employee>> get(@PathVariable("phoneNumber") String phoneNumber) {
-        return new ResponseEntity<>(employeeService.get(phoneNumber), HttpStatus.OK);
-    }
-
-    @GetMapping("/get/{employeeId}")
+    @GetMapping("/{employeeId}")
     public ResponseEntity<DataResponse<Employee>> get(@PathVariable("employeeId") long employeeId) {
         return new ResponseEntity<>(employeeService.get(employeeId), HttpStatus.OK);
     }
 
-    @GetMapping("/get-all-orders/{employeeId}")
+    @GetMapping("/all")
+    public ResponseEntity<DataResponse<List<Employee>>> getAll() {
+        return new ResponseEntity<>(employeeService.getAll(), HttpStatus.OK);
+    }
+
+    @GetMapping("/{employeeId}/orders")
     public ResponseEntity<DataResponse<List<Order>>> getAllOrders(@PathVariable("employeeId") long employeeId) {
         return new ResponseEntity<>(employeeService.getAllOrders(employeeId), HttpStatus.OK);
     }
 
-    @GetMapping("/get-schedule-file/{employeeId}")
+    @GetMapping("/{employeeId}/schedule")
     public ResponseEntity<ByteArrayResource> getScheduleFile(HttpServletResponse response,
-                                                  @PathVariable("employeeId") long employeeId) throws IOException {
+                                                             @PathVariable("employeeId") long employeeId) throws IOException {
         try {
             Workbook workbook = employeeService.getScheduleFile(employeeId);
 

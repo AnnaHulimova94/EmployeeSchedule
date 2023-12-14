@@ -33,14 +33,15 @@ public class OrderService {
         String orderValidationMessage = OrderValidator.validateDate(order);
 
         if (orderValidationMessage != null) {
-            return new DataResponse<>(order, orderValidationMessage);
+            return new DataResponse<>(null, orderValidationMessage);
         }
 
         Employer employer = employerService.get(employerId).getData();
 
         if (employer == null) {
-            return new DataResponse<>(order, ResponseMessage.EMPLOYER_IS_NOT_FOUND);
+            return new DataResponse<>(null, ResponseMessage.EMPLOYER_IS_NOT_FOUND);
         }
+
         order.setEmployer(employer);
 
         return new DataResponse<>(orderRepository.save(order), null);
@@ -51,6 +52,10 @@ public class OrderService {
 
         if (order == null) {
             return new DataResponse<>(null, ResponseMessage.ORDER_IS_NOT_FOUND);
+        }
+
+        if (order.getEmployee() != null) {
+            return new DataResponse<>(null, ResponseMessage.ORDER_IS_ASSIGNED);
         }
 
         Employee employee = employeeService.get(employeeId).getData();
@@ -81,20 +86,6 @@ public class OrderService {
                 orderRepository.getFreeOrderList()), null);
     }
 
-    public List<Order> getDisjointOrderList(List<Order> employeeOrderList, List<Order> orderList) {
-        Set<Order> unsuitableOrderList = new HashSet<>();
-
-        for (Order employeeOrder : employeeOrderList) {
-            unsuitableOrderList.addAll(orderList.stream()
-                    .filter(order -> isJointDateTime(employeeOrder, order))
-                    .collect(Collectors.toSet()));
-        }
-
-        orderList.removeAll(unsuitableOrderList);
-
-        return orderList;
-    }
-
     public DataResponse<Order> get(long orderId) {
         Order order = orderRepository.findById(orderId).orElse(null);
 
@@ -116,7 +107,7 @@ public class OrderService {
     }
 
     public DataResponse<Order> deleteEmployee(long orderId) {
-        Order order = orderRepository.findById(orderId).orElse(null);
+        Order order = orderRepository.getReferenceById(orderId);
 
         if (order == null) {
             return new DataResponse<>(null, ResponseMessage.ORDER_IS_NOT_FOUND);
@@ -125,6 +116,20 @@ public class OrderService {
         order.setEmployee(null);
 
         return new DataResponse<>(orderRepository.save(order), null);
+    }
+
+    private List<Order> getDisjointOrderList(List<Order> employeeOrderList, List<Order> orderList) {
+        Set<Order> unsuitableOrderList = new HashSet<>();
+
+        for (Order employeeOrder : employeeOrderList) {
+            unsuitableOrderList.addAll(orderList.stream()
+                    .filter(order -> isJointDateTime(employeeOrder, order))
+                    .collect(Collectors.toSet()));
+        }
+
+        orderList.removeAll(unsuitableOrderList);
+
+        return orderList;
     }
 
     private boolean isJointDateTime(Order employeeOrder, Order order) {

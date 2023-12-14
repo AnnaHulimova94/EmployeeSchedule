@@ -61,45 +61,55 @@ public class Main {
 
         employerRepository.save(employer2);
 
+        int year = LocalDateTime.now().getYear();
+        int month = LocalDateTime.now().getMonth().getValue();
+
+        if (month == 12) {
+            month = 1;
+            year++;
+        } else {
+            month++;
+        }
+
         Order order1 = new Order();
         order1.setEmployer(employer1);
-        order1.setStartTime(LocalDateTime.of(2023, 12, 23, 12, 00));
-        order1.setEndTime(LocalDateTime.of(2023, 12, 23, 15, 00));
+        order1.setStartTime(LocalDateTime.of(year, month, 20, 12, 0));
+        order1.setEndTime(LocalDateTime.of(year, month, 20, 15, 0));
 
         orderRepository.save(order1);
 
         Order order2 = new Order();
         order2.setEmployer(employer1);
-        order2.setStartTime(LocalDateTime.of(2023, 12, 23, 11, 00));
-        order2.setEndTime(LocalDateTime.of(2023, 12, 23, 16, 00));
+        order2.setStartTime(LocalDateTime.of(year, month, 20, 11, 0));
+        order2.setEndTime(LocalDateTime.of(year, month, 20, 16, 0));
 
         orderRepository.save(order2);
 
         Order order3 = new Order();
         order3.setEmployer(employer1);
-        order3.setStartTime(LocalDateTime.of(2023, 12, 23, 17, 30));
-        order3.setEndTime(LocalDateTime.of(2023, 12, 23, 20, 00));
+        order3.setStartTime(LocalDateTime.of(year, month, 20, 14, 45));
+        order3.setEndTime(LocalDateTime.of(year, month, 20, 17, 0));
 
         orderRepository.save(order3);
 
         Order order4 = new Order();
         order4.setEmployer(employer1);
-        order4.setStartTime(LocalDateTime.of(2023, 12, 24, 17, 00));
-        order4.setEndTime(LocalDateTime.of(2023, 12, 24, 19, 00));
+        order4.setStartTime(LocalDateTime.of(year, month, 20, 13, 0));
+        order4.setEndTime(LocalDateTime.of(year, month, 20, 14, 0));
 
         orderRepository.save(order4);
 
         Order order5 = new Order();
         order5.setEmployer(employer2);
-        order5.setStartTime(LocalDateTime.of(2023, 12, 23, 8, 00));
-        order5.setEndTime(LocalDateTime.of(2023, 12, 23, 15, 00));
+        order5.setStartTime(LocalDateTime.of(year, month, 20, 11, 0));
+        order5.setEndTime(LocalDateTime.of(year, month, 20, 14, 0));
 
         orderRepository.save(order5);
 
         Order order6 = new Order();
         order6.setEmployer(employer2);
-        order6.setStartTime(LocalDateTime.of(2023, 12, 24, 18, 00));
-        order6.setEndTime(LocalDateTime.of(2023, 12, 24, 20, 00));
+        order6.setStartTime(LocalDateTime.of(year, month, 20, 10, 0));
+        order6.setEndTime(LocalDateTime.of(year, month, 20, 12, 0));
 
         orderRepository.save(order6);
     }

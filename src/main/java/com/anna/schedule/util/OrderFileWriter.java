@@ -1,16 +1,13 @@
 package com.anna.schedule.util;
 
 import com.anna.schedule.PersonInterface;
+import com.anna.schedule.employee.Employee;
+import com.anna.schedule.employer.Employer;
 import com.anna.schedule.order.Order;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import javax.servlet.http.HttpServletResponse;
-import java.awt.*;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,7 +22,16 @@ public class OrderFileWriter {
 
     public Workbook generate(List<Order> orderList,
                              PersonInterface person) {
-        sheet = workbook.createSheet(person.getLastName() + " " + person.getFirstName() + ".xls");
+        if (orderList == null || person == null) {
+            return null;
+        }
+
+        orderList = orderList.stream()
+                .filter(order -> person instanceof Employer
+                        || person instanceof Employee)
+                .collect(Collectors.toList());
+
+        sheet = workbook.createSheet(person.getLastName() + " " + person.getFirstName());
         createHeader();
         fillSchedule(orderList, person);
 
@@ -39,7 +45,7 @@ public class OrderFileWriter {
     private void createHeader() {
         Row row = sheet.createRow(0);
         Cell cell = row.createCell(0);
-        cell.setCellValue(" ");
+        cell.setCellValue("");
 
         cell = row.createCell(1);
         cell.setCellValue("Coworker");
@@ -89,8 +95,6 @@ public class OrderFileWriter {
                 cell.setCellValue(coworker.getPhoneNumber());
             }
 
-            coworker = null;
-
             cell = row.createCell(3);
             cell.setCellValue(order.getStartTime());
             cell.setCellStyle(cellStyleDate);
@@ -99,6 +103,7 @@ public class OrderFileWriter {
             cell.setCellValue(order.getEndTime());
             cell.setCellStyle(cellStyleDate);
 
+            coworker = null;
             rowCount++;
         }
     }

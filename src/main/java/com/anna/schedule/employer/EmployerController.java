@@ -7,7 +7,6 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
@@ -22,29 +21,28 @@ public class EmployerController {
         this.employerService = employerService;
     }
 
-    @PostMapping("/add")
+    @PostMapping
     public ResponseEntity<DataResponse<Employer>> add(@RequestBody Employer employer) {
         return new ResponseEntity<>(employerService.add(employer), HttpStatus.OK);
     }
 
-    @GetMapping("/get-by-phone-number/{phoneNumber}")
-    public ResponseEntity<DataResponse<Employer>> get(@PathVariable("phoneNumber") String phoneNumber) {
-        return new ResponseEntity<>(employerService.getByPhoneNumber(phoneNumber), HttpStatus.OK);
-    }
-
-    @GetMapping("/get/{employerId}")
+    @GetMapping("/{employerId}")
     public ResponseEntity<DataResponse<Employer>> get(@PathVariable("employerId") long employerId) {
         return new ResponseEntity<>(employerService.get(employerId), HttpStatus.OK);
     }
 
-    @GetMapping("/get-all-orders/{employerId}")
+    @GetMapping("/all")
+    public ResponseEntity<DataResponse<List<Employer>>> getAll() {
+        return new ResponseEntity<>(employerService.getAll(), HttpStatus.OK);
+    }
+
+    @GetMapping("/{employerId}/orders")
     public ResponseEntity<DataResponse<List<Order>>> getAllOrders(@PathVariable("employerId") long employerId) {
         return new ResponseEntity<>(employerService.getAllOrders(employerId), HttpStatus.OK);
     }
 
-    @GetMapping("/get-schedule-file/{employerId}")
-    public ResponseEntity<ByteArrayResource> getScheduleFile(HttpServletResponse response,
-                                                             @PathVariable("employerId") long employerId) throws IOException {
+    @GetMapping("/{employerId}/schedule")
+    public ResponseEntity<ByteArrayResource> getScheduleFile(@PathVariable("employerId") long employerId) throws IOException {
         try {
             Workbook workbook = employerService.getScheduleFile(employerId);
 

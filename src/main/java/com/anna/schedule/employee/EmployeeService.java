@@ -7,10 +7,7 @@ import com.anna.schedule.util.ResponseMessage;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class EmployeeService {
@@ -22,19 +19,16 @@ public class EmployeeService {
     }
 
     public DataResponse<Employee> add(Employee employee) {
-        if (employeeRepository.findById(employee.getId()).isPresent()) {
-            return new DataResponse<>(employee, ResponseMessage.EMPLOYEE_ALREADY_EXITS);
+        if (employeeRepository.getByPhoneNumber(employee.getPhoneNumber()) != null) {
+            return new DataResponse<>(null, ResponseMessage.PHONE_NUMBER_ALREADY_IN_USE);
+        }
+
+        if (employee.getPhoneNumber() == null
+                || !employee.getPhoneNumber().matches("\\+([0-9]{12})")) {
+            return new DataResponse<>(null, ResponseMessage.PHONE_NUMBER_FORMAT_IS_INVALID);
         }
 
         return new DataResponse<>(employeeRepository.save(employee), null);
-    }
-
-    public DataResponse<Employee> get(String phoneNumber) {
-        Employee employee = employeeRepository.getByPhoneNumber(phoneNumber);
-
-        return employee == null
-                ? new DataResponse<>(null, ResponseMessage.EMPLOYEE_IS_NOT_FOUND)
-                : new DataResponse<>(employee, null);
     }
 
     public DataResponse<Employee> get(long id) {
@@ -45,8 +39,12 @@ public class EmployeeService {
                 : new DataResponse<>(employee, null);
     }
 
+    public DataResponse<List<Employee>> getAll() {
+        return new DataResponse<>(employeeRepository.findAll(), null);
+    }
+
     public DataResponse<List<Order>> getAllOrders(long id) {
-        Employee employee = employeeRepository.findById(id).orElse(null);
+        Employee employee = employeeRepository.getReferenceById(id);
 
         return employee == null
                 ? new DataResponse<>(null, ResponseMessage.EMPLOYEE_IS_NOT_FOUND)
@@ -54,7 +52,7 @@ public class EmployeeService {
     }
 
     public Workbook getScheduleFile(long id) {
-        Employee employee = employeeRepository.findById(id).orElse(null);
+        Employee employee = employeeRepository.getReferenceById(id);
 
         if (employee == null) {
             return null;

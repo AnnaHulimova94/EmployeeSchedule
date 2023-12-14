@@ -3,9 +3,7 @@ package com.anna.schedule.employer;
 import com.anna.schedule.PersonInterface;
 import com.anna.schedule.order.Order;
 import com.sun.istack.NotNull;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.Pattern;
@@ -13,7 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @NoArgsConstructor
-@Data
+@Setter
+@Getter
 @Entity
 @Table(name = "Employer")
 public class Employer implements PersonInterface {
@@ -33,9 +32,14 @@ public class Employer implements PersonInterface {
 
     @NonNull
     @Pattern(regexp = "\\+([0-9]{12})")
-    @Column(name = "employer_phone_number")
+    @Column(name = "employer_phone_number", unique = true)
     private String phoneNumber;
 
     @OneToMany(mappedBy = "employer")
     private List<Order> orderList = new ArrayList<>();
+
+    @Override
+    public String toString() {
+        return "" + id;
+    }
 }

@@ -18,34 +18,32 @@ public class OrderController {
         this.orderService = orderService;
     }
 
-    @PostMapping("/create/{employerId}")
-    public ResponseEntity<DataResponse<Order>> create(@RequestBody Order order,
-                                                      @PathVariable("employerId") long employerId) {
-        return new ResponseEntity<>(orderService.create(order, employerId), HttpStatus.OK);
+    @PostMapping("/create")
+    public ResponseEntity<DataResponse<Order>> create(@RequestBody OrderDTO orderDTO) {
+        return new ResponseEntity<>(orderService.create(orderDTO.getOrder(), orderDTO.getEmployerId()), HttpStatus.OK);
     }
 
-    @PostMapping("/add-employee/{orderId}/{employeeId}")
-    public ResponseEntity<DataResponse<Order>> addEmployee(@PathVariable("orderId") long orderId,
-                                                           @PathVariable("employeeId") long employeeId) {
-        return new ResponseEntity<>(orderService.addEmployee(orderId, employeeId), HttpStatus.OK);
+    @PostMapping("/add-employee")
+    public ResponseEntity<DataResponse<Order>> addEmployee(@RequestBody OrderDTO orderDTO) {
+        return new ResponseEntity<>(orderService.addEmployee(orderDTO.getOrderId(), orderDTO.getEmployeeId()), HttpStatus.OK);
     }
 
-    @GetMapping("/get/{orderId}")
+    @GetMapping("/{orderId}")
     public ResponseEntity<DataResponse<Order>> get(@PathVariable("orderId") long orderId) {
         return new ResponseEntity<>(orderService.get(orderId), HttpStatus.OK);
     }
 
-    @GetMapping("/get-suitable-order-list/{employeeId}")
+    @GetMapping("/{employeeId}/get-suitable-order-list")
     public ResponseEntity<DataResponse<List<Order>>> getSuitableOrderList(@PathVariable("employeeId") long employeeId) {
         return new ResponseEntity<>(orderService.getSuitableOrderList(employeeId), HttpStatus.OK);
     }
 
-    @DeleteMapping("/delete/{orderId}")
+    @DeleteMapping("/{orderId}")
     public ResponseEntity<DataResponse<Order>> delete(@PathVariable("orderId") long orderId) {
         return new ResponseEntity<>(orderService.delete(orderId), HttpStatus.OK);
     }
 
-    @DeleteMapping("delete-employee/{orderId}")
+    @DeleteMapping("/{orderId}/delete-employee")
     public ResponseEntity<DataResponse<Order>> deleteEmployee(@PathVariable("orderId") long orderId) {
         return new ResponseEntity<>(orderService.deleteEmployee(orderId), HttpStatus.OK);
     }

@@ -4,15 +4,14 @@ import com.anna.schedule.employee.Employee;
 import com.anna.schedule.employer.Employer;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @NoArgsConstructor
-@Data
+@Setter
+@Getter
 @Entity
 @Table(name = "Work_Order")
 public class Order {
